@@ -29,7 +29,7 @@ def get_results(dir_path='./mlp_results'):
             for key, result in results.items():
                 list_result.append(result)
 
-    df = pd.DataFrame(list_result)[['acc', 'head', 'layer', 'task', 'model_name']]
+    df = pd.DataFrame(list_result)[['acc', 'devacc', 'head', 'layer', 'task', 'model_name', 'location']]
 
     for column in columns:
         try:
@@ -45,7 +45,7 @@ def get_top_heads(model_name, task):
 
     df = df.loc[df['head'] >= 0]
     df = df.loc[df['task'] == task] # Choose task
-    df = df.sort_values(by=['acc'], ascending=False)
+    df = df.sort_values(by=['devacc'], ascending=False)
     list_head = []
     for index, row in df.iterrows():
         list_head.append((row['layer'], row['head']))

@@ -30,20 +30,19 @@ if __name__ == '__main__':
     parser.add_argument("--usepytorch", type=bool, default=True)
     parser.add_argument("--task_path", type=str, default='./SentEval/data/')
     parser.add_argument("--cache_path", type=str, default='./cache/')
-    parser.add_argument("--result_path", type=str, default='./ds_top_head_wise_results/')
+    parser.add_argument("--result_path", type=str, default='./v_ds_top_head_wise_results/')
     parser.add_argument("--optim", type=str, default='rmsprop')
     parser.add_argument("--cbatch_size", type=int, default=256)
     parser.add_argument("--tenacity", type=int, default=3)
     parser.add_argument("--epoch_size", type=int, default=2)
-    parser.add_argument("--model_name", type=str, default='openai-gpt') #
+    parser.add_argument("--model_name", type=str, default='gpt2') #
 
     parser.add_argument("--task", type=int, default=0)
     parser.add_argument("--num_head", type=int, default=12)
-    parser.add_argument("--intv_head", type=int, default=1)
-    parser.add_argument("--total_head", type=int, default=40)
+    parser.add_argument("--intv_head", type=int, default=12)
+    parser.add_argument("--total_head", type=int, default=1)
 
-
-    parser.add_argument("--location", type=str, default='head') #8, 15
+    parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
     parser.add_argument("--nhid", type=int, default=0)
@@ -103,18 +102,20 @@ if __name__ == '__main__':
 
     """
 
-    with tqdm(total=num_exp, file=sys.stdout) as pbar:
-        for num_head in list_num_head:
-            args.num_head = num_head
-            print('\n---------')
-            print("{} heads".format(num_head))
+    for i in [15,16,19]:
+        args.task = tasks[i]
+        with tqdm(total=num_exp, file=sys.stdout) as pbar:
+            for num_head in list_num_head:
+                args.num_head = num_head
+                print('\n---------')
+                print("{} heads".format(num_head))
 
-            exp_result = experiment(model, args.task, deepcopy(args))
+                exp_result = experiment(model, args.task, deepcopy(args))
 
-            pbar.set_description('P: %d' % (1 + cnt))
-            pbar.update(1)
-            cnt += 1
+                pbar.set_description('P: %d' % (1 + cnt))
+                pbar.update(1)
+                cnt += 1
 
-            print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
-            save_exp_result(exp_result, args.task)
+                print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
+                save_exp_result(exp_result, args.task)
 
