@@ -33,8 +33,8 @@ if __name__ == '__main__':
 
     # ====== Generate Embedding of Large Model ====== #
     parser = argparse.ArgumentParser(description='Evaluate BERT')
-    parser.add_argument("--device", type=list, default=[0, 1, 2, 3, 4, 5, 6, 7])
-    parser.add_argument("--batch_size", type=int, default=100)
+    parser.add_argument("--device", type=list, default=[6, 7])
+    parser.add_argument("--batch_size", type=int, default=250)
     parser.add_argument("--kfold", type=int, default=5)
     parser.add_argument("--usepytorch", type=bool, default=True)
     parser.add_argument("--task_path", type=str, default='./SentEval/data/')
@@ -44,12 +44,12 @@ if __name__ == '__main__':
     parser.add_argument("--cbatch_size", type=int, default=256)
     parser.add_argument("--tenacity", type=int, default=3)
     parser.add_argument("--epoch_size", type=int, default=2)
-    parser.add_argument("--model_name", type=str, default='transfo-xl-wt103')  #
+    parser.add_argument("--model_name", type=str, default='gpt2')  #
 
-    parser.add_argument("--task", type=int, default=0)
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 17])
-    parser.add_argument("--head", nargs='+', type=int, default=[-1])
-    parser.add_argument("--location", type=str, default='fc')
+    parser.add_argument("--task", type=int, default=21)
+    parser.add_argument("--layer", nargs='+', type=int, default=[0, 11])
+    parser.add_argument("--head", nargs='+', type=int, default=[0, 11])
+    parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
     parser.add_argument("--nhid", type=int, default=0)
@@ -102,5 +102,9 @@ if __name__ == '__main__':
                 pbar.update(1)
                 cnt += 1
 
-                print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
+                if args.task in ['SICKRelatedness', 'STSBenchmark']:
+                    print("** Saving Best Result of pearson: {}.".format(exp_result['pearson']))
+
+                else:
+                    print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
                 save_exp_result(exp_result, args.task)

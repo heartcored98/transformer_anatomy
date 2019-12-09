@@ -78,8 +78,13 @@ def experiment(model, task, args):
         params['devpearson'] = result[task]['devpearson']
         params['pearson'] = result[task]['pearson']
 
-    elif task in ['STS12', 'STS13', 'STS14', 'STS15', 'STS16', 'STSBenchmark']:
+    elif task in ['STS12', 'STS13', 'STS14', 'STS15', 'STS16']:
         params['pearson'] = result[task]['all']['pearson']['mean']
+
+    elif task in ['STSBenchmark']:
+        params['devpearson'] = result[task]['devpearson']
+        params['pearson'] = result[task]['pearson']
+        params['spearman'] = result[task]['spearman']
 
 
     else:

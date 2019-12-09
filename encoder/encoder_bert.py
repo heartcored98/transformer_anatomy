@@ -8,7 +8,7 @@ import time
 import numpy as np
 import torch
 
-PATH_BERT = '../../pytorch-pretrained-BERT'
+PATH_BERT = '/home/users/whwodud98/pytorch-pretrained-BERT'
 sys.path.insert(0, PATH_BERT)
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 from .encoder import BaseEncoder
@@ -107,8 +107,14 @@ class BERTEncoder(BaseEncoder):
 
 
 if __name__ == '__main__':
+    model = BertModel.from_pretrained('model.bin')
+    model.cuda()
+    model = torch.nn.DataParallel(model)
+    model.eval()
+
+    print("====================")
     model = BERTEncoder('bert-base-uncased')
-    model.prepare('Length')
+    model.prepare('Length', 'head')
     model.construct_encoder()
 
 

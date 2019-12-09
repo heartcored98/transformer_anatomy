@@ -7,12 +7,12 @@ import json
 from .tasks import *
 
 
-PATH_BERT = '../pytorch-pretrained-BERT'
+PATH_BERT = '/home/users/whwodud98/pytorch-pretrained-BERT'
 sys.path.insert(0, PATH_BERT)
 
-PATH_SENTEVAL = './SentEval'
-PATH_TO_DATA = './SentEval/data/'
-PATH_TO_CACHE = './cache/'
+PATH_SENTEVAL = '/home/users/whwodud98/bert/SentEval'
+PATH_TO_DATA = '/home/users/whwodud98/bert/SentEval/data/'
+PATH_TO_CACHE = '/home/users/whwodud98/bert/cache/'
 sys.path.insert(0, PATH_SENTEVAL)
 import senteval
 
@@ -30,7 +30,7 @@ def get_results(dir_path='./mlp_results'):
             for key, result in results.items():
                 list_result.append(result)
 
-    df = pd.DataFrame(list_result)[['acc', 'devacc', 'head', 'layer', 'task', 'model_name', 'location']]
+    df = pd.DataFrame(list_result)[['acc', 'devacc', 'devpearson', 'pearson', 'head', 'layer', 'task', 'model_name', 'location']]
 
     for column in columns:
         try:
@@ -40,14 +40,14 @@ def get_results(dir_path='./mlp_results'):
     return df
 
 
-def get_top_heads(model_name, task):
-    df = get_results(dir_path='./ds_linear_head_wise_results')
+def get_top_heads(model_name, task, metric='devacc', dir_path='./ds_linear_head_wise_results'):
+    df = get_results(dir_path=dir_path)
     df = df.loc[df['model_name'] == model_name]
     print(df)
 
     df = df.loc[df['head'] >= 0]
     df = df.loc[df['task'] == task] # Choose task
-    df = df.sort_values(by=['devacc'], ascending=False)
+    df = df.sort_values(by=[metric], ascending=False)
     list_head = []
     for index, row in df.iterrows():
         list_head.append((row['layer'], row['head']))
