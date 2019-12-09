@@ -38,9 +38,6 @@ def save_exp_result(params, task):
     # result_name = "{}_{}.json".format(params['model_name'], task)
     result_name = generate_result_name(params['model_name'], task)
 
-    print("### in save_exp result")
-    print(result_name)
-
     result_dir = params['result_path']
     onlyfiles = [f for f in listdir(result_dir) if isfile(join(result_dir, f))]
 

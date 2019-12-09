@@ -62,7 +62,7 @@ if __name__ == '__main__':
     parser.add_argument("--ckpt", type=int, required=True) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
 
 
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 11])
+    parser.add_argument("--layer", nargs='+', type=int, default=[0])
     parser.add_argument("--head", nargs='+', type=int, default=[0, 11])
     parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
@@ -72,7 +72,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(str(x) for x in args.device) if isinstance(args.device, list) else str(args.device)
+
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7" #','.join(str(x) for x in args.device) if isinstance(args.device, list) else str(args.device) #
 
     list_ckpt = get_ckpt_list(args.task, args.model_name, args.exp_name, args.seed)
     list_layer = range(args.layer[0], args.layer[1]+1) if len(args.layer) > 1 else [args.layer[0]]
