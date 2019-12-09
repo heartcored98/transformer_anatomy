@@ -51,11 +51,27 @@ def get_top_heads(model_name, task):
         list_head.append((row['layer'], row['head']))
     return list_head
 
+def parse_model_name(model_name):
+    temp = model_name.split('/')
+    task, model, exp_name, seed, ckpt = temp[5:]
+    ckpt = int(ckpt.split('-')[-1])
+    return task, model, exp_name, seed, ckpt
+
+
+def generate_result_name(model_name, task):
+    print("in generate result name")
+    print(model_name)
+    if '/' in model_name:
+        task, model, exp_name, seed, ckpt = parse_model_name(model_name)
+        return "{}_{}_{}_{}_{}.json".format(task, model, exp_name, seed, ckpt)
+    else:
+        return "{}_{}.json".format(model_name, task)
 
 def save_exp_result(exp_result, task):
+    print("*** save eefefe")
     del exp_result['model']
     exp_key = '{}_{}'.format(exp_result['num_head'], exp_result['location'])
-    result_name = "{}_{}.json".format(exp_result['model_name'], task)
+    result_name = generate_result_name(exp_result['model_name'], task)
     result_dir = exp_result['result_path']
     onlyfiles = [f for f in listdir(result_dir) if isfile(join(result_dir, f))]
 

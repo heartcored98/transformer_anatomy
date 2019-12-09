@@ -4,6 +4,7 @@ from os.path import isfile, join
 import pickle
 import hashlib
 import time
+import os
 
 import numpy as np
 import torch
@@ -12,6 +13,8 @@ PATH_BERT = '/home/users/whwodud98/pytorch-pretrained-BERT'
 sys.path.insert(0, PATH_BERT)
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 from .encoder import BaseEncoder
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 
 class BERTEncoder(BaseEncoder):
@@ -24,7 +27,9 @@ class BERTEncoder(BaseEncoder):
         model.cuda()
         model = torch.nn.DataParallel(model)
         model.eval()
-        tokenizer = BertTokenizer.from_pretrained(self.model_name, do_lower_case=True)
+
+        temp = '/'.join(self.model_name.split('/')[:-1])
+        tokenizer = BertTokenizer.from_pretrained(temp, do_lower_case=True)
         print("Model and tokenzier are constructed!")
         return model, tokenizer
 
@@ -107,14 +112,10 @@ class BERTEncoder(BaseEncoder):
 
 
 if __name__ == '__main__':
-    model = BertModel.from_pretrained('model.bin')
+    model = BertModel.from_pretrained("/home/users/whwodud98/exp/MRPC/bert-base-uncased/last3/0/checkpoint-0")
     model.cuda()
     model = torch.nn.DataParallel(model)
     model.eval()
-
-    print("====================")
-    model = BERTEncoder('bert-base-uncased')
-    model.prepare('Length', 'head')
-    model.construct_encoder()
+    tokenizer = BertTokenizer.from_pretrained("/home/users/whwodud98/exp/MRPC/bert-base-uncased/last3/0/checkpoint-0", do_lower_case=True)
 
 

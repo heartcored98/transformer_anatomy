@@ -15,12 +15,38 @@ sys.path.insert(0, PATH_SENTEVAL)
 import senteval
 
 
+def parse_model_name(model_name):
+    temp = model_name.split('/')
+    task, model, exp_name, seed, ckpt = temp[5:]
+    ckpt = int(ckpt.split('-')[-1])
+    return task, model, exp_name, seed, ckpt
+
+
+def generate_result_name(model_name, task):
+    print("in generate result name")
+    print(model_name)
+    if '/' in model_name:
+        task, model, exp_name, seed, ckpt = parse_model_name(model_name)
+        return "{}_{}_{}_{}_{}.json".format(task, model, exp_name, seed, ckpt)
+    else:
+        return "{}_{}.json".format(model_name, task)
+
+
 def save_exp_result(params, task):
     del params['model']
     exp_key = '{}_{}_{}'.format(params['layer'], params['head'], params['location'])
-    result_name = "{}_{}.json".format(params['model_name'], task)
+    # result_name = "{}_{}.json".format(params['model_name'], task)
+    result_name = generate_result_name(params['model_name'], task)
+
+    print("### in save_exp result")
+    print(result_name)
+
     result_dir = params['result_path']
     onlyfiles = [f for f in listdir(result_dir) if isfile(join(result_dir, f))]
+
+    if '/' in params['model_name']:
+        task, model, exp_name, seed, ckpt = parse_model_name(params['model_name'])
+        params.update({'exp_name':exp_name, 'seed':seed, 'ckpt':ckpt})
 
     if result_name in onlyfiles:
         with open(join(result_dir, result_name), 'r') as f:
