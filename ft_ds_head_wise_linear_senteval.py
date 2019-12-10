@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # ====== Generate Embedding of Large Model ====== #
     parser = argparse.ArgumentParser(description='Evaluate BERT')
     parser.add_argument("--device", type=int, default=0)
-    parser.add_argument("--batch_size", type=int, default=2000)
+    parser.add_argument("--batch_size", type=int, default=4000)
     parser.add_argument("--kfold", type=int, default=5)
     parser.add_argument("--usepytorch", type=bool, default=True)
     parser.add_argument("--task_path", type=str, default='./SentEval/data/')
@@ -59,11 +59,12 @@ if __name__ == '__main__':
     parser.add_argument("--exp_name", type=str, required=True)  #last3
     parser.add_argument("--seed", type=int, required=True)  #0
     parser.add_argument("--task", type=str, required=True) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
-    parser.add_argument("--ckpt", type=int, required=True) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
+    parser.add_argument("--ckpt", type=int, required=False) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
+    parser.add_argument("--ckpt_run", action='store_true', required=False) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
 
 
-    parser.add_argument("--layer", nargs='+', type=int, default=[0])
-    parser.add_argument("--head", nargs='+', type=int, default=[0, 11])
+    parser.add_argument("--layer", nargs='+', type=int, default=[0,11])
+    parser.add_argument("--head", nargs='+', type=int, default=[0])
     parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
@@ -74,7 +75,7 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
 
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7" #','.join(str(x) for x in args.device) if isinstance(args.device, list) else str(args.device) #
+    os.environ["CUDA_VISIBLE_DEVICES"] = '4,5,6,7' #','.join(str(x) for x in args.device) if isinstance(args.device, list) else str(args.device) #
 
     list_ckpt = get_ckpt_list(args.task, args.model_name, args.exp_name, args.seed)
     list_layer = range(args.layer[0], args.layer[1]+1) if len(args.layer) > 1 else [args.layer[0]]
@@ -93,33 +94,28 @@ if __name__ == '__main__':
     print("======================================")
 
 
-
-    with tqdm(total=num_exp, file=sys.stdout) as pbar:
+    if args.ckpt_run:
+        num_exp = len(list(list_layer)) * len(list_head) * len(list_ckpt)
         cnt = 0
+        with tqdm(total=num_exp, file=sys.stdout) as pbar:
 
-        model_name = list_ckpt[args.ckpt]
+            for i in [3, 5]:
+                args.model_name = list_ckpt[i]
 
-        args.model_name = model_name
-        #args.task = tasks[args.task]
-        if 'bert-base-uncased' in args.model_name or 'bert-large-uncased' in args.model_name:
-            model = BERTEncoder(model_name=args.model_name, encode_capacity=args.batch_size, PATH_CACHE=args.cache_path)
-        elif args.model_name == 'openai-gpt':
-            model = GPTEncoder(encode_capacity=args.batch_size)
-        elif args.model_name == 'gpt2':
-            model = GPT2Encoder(encode_capacity=args.batch_size)
-        elif args.model_name == 'transfo-xl-wt103':
-            model = TransfoXLEncoder(encode_capacity=args.batch_size)
-        else:
-            raise ValueError
+                #args.task = tasks[args.task]
+                if 'bert-base-uncased' in args.model_name or 'bert-large-uncased' in args.model_name:
+                    model = BERTEncoder(model_name=args.model_name, encode_capacity=args.batch_size, PATH_CACHE=args.cache_path)
+                elif args.model_name == 'openai-gpt':
+                    model = GPTEncoder(encode_capacity=args.batch_size)
+                elif args.model_name == 'gpt2':
+                    model = GPT2Encoder(encode_capacity=args.batch_size)
+                elif args.model_name == 'transfo-xl-wt103':
+                    model = TransfoXLEncoder(encode_capacity=args.batch_size)
+                else:
+                    raise ValueError
 
-
-        for head in list_head:
-            for layer in list_layer:
-
-                print('\n---------')
-                print("L: {}. H: {}.".format(layer, head))
-                args.head = head
-                args.layer = layer
+                args.head = 0
+                args.layer = 0
 
                 exp_result = experiment(model, args.task, deepcopy(args))
 
@@ -133,3 +129,45 @@ if __name__ == '__main__':
                 else:
                     print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
                 save_exp_result(exp_result, args.task)
+
+    else:
+        num_exp = len(list(list_layer)) * len(list_head)
+        cnt = 0
+
+        with tqdm(total=num_exp, file=sys.stdout) as pbar:
+
+            model_name = list_ckpt[args.ckpt]
+
+            args.model_name = model_name
+            # args.task = tasks[args.task]
+            if 'bert-base-uncased' in args.model_name or 'bert-large-uncased' in args.model_name:
+                model = BERTEncoder(model_name=args.model_name, encode_capacity=args.batch_size, PATH_CACHE=args.cache_path)
+            elif args.model_name == 'openai-gpt':
+                model = GPTEncoder(encode_capacity=args.batch_size)
+            elif args.model_name == 'gpt2':
+                model = GPT2Encoder(encode_capacity=args.batch_size)
+            elif args.model_name == 'transfo-xl-wt103':
+                model = TransfoXLEncoder(encode_capacity=args.batch_size)
+            else:
+                raise ValueError
+
+            for head in list_head:
+                for layer in list_layer:
+
+                    print('\n---------')
+                    print("L: {}. H: {}.".format(layer, head))
+                    args.head = head
+                    args.layer = layer
+
+                    exp_result = experiment(model, args.task, deepcopy(args))
+
+                    pbar.set_description('P: %d' % (1 + cnt))
+                    pbar.update(1)
+                    cnt += 1
+
+                    if args.task in ['SICKRelatedness', 'STSBenchmark']:
+                        print("** Saving Best Result of pearson: {}.".format(exp_result['pearson']))
+
+                    else:
+                        print("** Saving Best Result of Acc: {}.".format(exp_result['acc']))
+                    save_exp_result(exp_result, args.task)
