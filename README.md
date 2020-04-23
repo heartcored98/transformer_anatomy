@@ -59,9 +59,9 @@ These implementations is largely based on the following implementations.
 
 
 ## TODO 
-[ ] Clean up directory structure
-[ ] Recover layer-wise, head-wise | probing-task, downstream-task | fine-tuning
-[ ] Update embedding caching algorithm -> pickle to parquet
-[ ] Refactoring Anatomy Wrapper class
-[ ] Add experiments result access class 
-[ ] Semantic / Syntactic Visualization
+[ ] Clean up directory structure  
+[ ] Recover layer-wise, head-wise | probing-task, downstream-task | fine-tuning  
+[ ] Update embedding caching algorithm -> pickle to parquet  
+[ ] Refactoring Anatomy Wrapper class  
+[ ] Add experiments result access class   
+[ ] Semantic / Syntactic Visualization  
