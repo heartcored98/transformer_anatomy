@@ -56,3 +56,12 @@ These implementations is largely based on the following implementations.
 **huggingface's pytorch-pretrained-BERT**  provides the pre-trained transformer encoders not only BERT but also GPT/GPT2 and Transformer-XL models. The results of the paper is produced by using these implementation with **slight change**.  
 
 **facebookresearch's SentEval** provides toolkit for benchmarking the sentence embedding of given sentence encoder model on 17 downstream tasks and 10 probing tasks. The benchmarking result of the paper is produced by using these pre-implemented datasets.
+
+
+## TODO 
+[ ] Clean up directory structure
+[ ] Recover layer-wise, head-wise | probing-task, downstream-task | fine-tuning
+[ ] Update embedding caching algorithm -> pickle to parquet
+[ ] Refactoring Anatomy Wrapper class
+[ ] Add experiments result access class 
+[ ] Semantic / Syntactic Visualization
