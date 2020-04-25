@@ -4,7 +4,10 @@
 *ipynb_checkpoints*
 __pycache__
 
+# Ignore large dataset
+SentEval/data
 glue_data
 
+# Ignore automatically generated experiments 
 runs
 lightning_logs
