@@ -16,8 +16,8 @@ from .encoder import BaseEncoder
 
 class GPTEncoder(BaseEncoder):
 
-    def __init__(self, model_name='openai-gpt', encode_capacity=3000, PATH_CACHE='./cache'):
-        super(GPTEncoder, self).__init__(model_name, encode_capacity, PATH_CACHE)
+    def __init__(self, model_name='openai-gpt', encode_capacity=3000, path_cache='./cache'):
+        super(GPTEncoder, self).__init__(model_name, encode_capacity, path_cache)
 
     def construct_encoder(self):
         model = OpenAIGPTModel.from_pretrained(self.model_name)

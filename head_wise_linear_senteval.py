@@ -2,6 +2,9 @@ import sys
 from copy import deepcopy
 import os
 import argparse
+import sklearn
+
+
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -13,12 +16,11 @@ sys.path.insert(0, PATH_BERT)
 
 PATH_SENTEVAL = './SentEval'
 PATH_TO_DATA = './SentEval/data/'
-PATH_TO_CACHE = './cache/'
 sys.path.insert(0, PATH_SENTEVAL)
 import senteval
 
-from encoder import BERTEncoder, GPTEncoder, GPT2Encoder, TransfoXLEncoder
-from encoder.single_head_exp import *
+from transformer_anatomy.encoder import BERTEncoder, GPTEncoder, GPT2Encoder, TransfoXLEncoder
+from transformer_anatomy.single_head_exp import *
 
 
 if __name__ == '__main__':
@@ -26,22 +28,22 @@ if __name__ == '__main__':
     # ====== Generate Embedding of Large Model ====== #
     parser = argparse.ArgumentParser(description='Evaluate BERT')
     parser.add_argument("--device", type=list, default=[0,1,2,3,4,5,6,7])
-    parser.add_argument("--batch_size", type=int, default=100)
+    parser.add_argument("--batch_size", type=int, default=5000)
     parser.add_argument("--kfold", type=int, default=5)
     parser.add_argument("--usepytorch", type=bool, default=True)
     parser.add_argument("--task_path", type=str, default='./SentEval/data/')
-    parser.add_argument("--cache_path", type=str, default='./cache/')
-    parser.add_argument("--result_path", type=str, default='./linear_results/')
+    parser.add_argument("--cache_path", type=str, default='.cache')
+    parser.add_argument("--result_path", type=str, default='results/test_probing_head_wise')
     parser.add_argument("--optim", type=str, default='rmsprop')
     parser.add_argument("--cbatch_size", type=int, default=256)
     parser.add_argument("--tenacity", type=int, default=3)
     parser.add_argument("--epoch_size", type=int, default=2)
-    parser.add_argument("--model_name", type=str, default='transfo-xl-wt103') #
+    parser.add_argument("--model_name", type=str, default='bert-base-uncased') #
 
     parser.add_argument("--task", type=int, default=0)
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 17])
-    parser.add_argument("--head", nargs='+', type=int, default=[-1]) #8, 15
-    parser.add_argument("--location", type=str, default='fc') #8, 15
+    parser.add_argument("--layer", nargs='+', type=int, default=[0, 1])
+    parser.add_argument("--head", nargs='+', type=int, default=[0, 1]) #8, 15
+    parser.add_argument("--location", type=str, default='head') #8, 15
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
     parser.add_argument("--nhid", type=int, default=0)

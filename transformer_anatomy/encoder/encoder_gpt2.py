@@ -16,8 +16,8 @@ from .encoder import BaseEncoder
 
 class GPT2Encoder(BaseEncoder):
 
-    def __init__(self, model_name='gpt2', encode_capacity=3000, PATH_CACHE='./cache'):
-        super(GPT2Encoder, self).__init__(model_name, encode_capacity, PATH_CACHE)
+    def __init__(self, model_name='gpt2', encode_capacity=3000, path_cache='./cache'):
+        super(GPT2Encoder, self).__init__(model_name, encode_capacity, path_cache)
 
     def construct_encoder(self):
         model = GPT2Model.from_pretrained(self.model_name)

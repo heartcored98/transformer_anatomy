@@ -9,7 +9,7 @@ import os
 import numpy as np
 import torch
 
-PATH_BERT = '/home/users/whwodud98/pytorch-pretrained-BERT'
+PATH_BERT = '/home/jovyan/drmoacl/transformer_anatomy'
 sys.path.insert(0, PATH_BERT)
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 from .encoder import BaseEncoder
@@ -19,8 +19,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 class BERTEncoder(BaseEncoder):
 
-    def __init__(self, model_name, encode_capacity=3000, PATH_CACHE='./cache'):
-        super(BERTEncoder, self).__init__(model_name, encode_capacity, PATH_CACHE)
+    def __init__(self, model_name, encode_capacity=3000, path_cache='.cache'):
+        super(BERTEncoder, self).__init__(model_name, encode_capacity, path_cache)
 
     def construct_encoder(self):
         model = BertModel.from_pretrained(self.model_name)
@@ -29,7 +29,8 @@ class BERTEncoder(BaseEncoder):
         model.eval()
 
         temp = '/'.join(self.model_name.split('/')[:-1])
-        tokenizer = BertTokenizer.from_pretrained(temp, do_lower_case=True)
+        print('tokenizer', self.model_name)
+        tokenizer = BertTokenizer.from_pretrained(self.model_name, do_lower_case=True)
         print("Model and tokenzier are constructed!")
         return model, tokenizer
 

@@ -8,11 +8,11 @@ TASK_DICT = {'MRPC': 'mrpc', 'STS-B': 'STSBenchmark', 'SST-2': 'SST2'}
 
 class BaseEncoder():
 
-    def __init__(self, model_name, encode_capacity=3000, PATH_CACHE='./cache'):
+    def __init__(self, model_name, encode_capacity, path_cache):
         self.model_name = model_name
 
         self.encode_capacity = encode_capacity
-        self.PATH_CACHE = PATH_CACHE
+        self.path_cache = path_cache
 
         self.model = None
         self.tokenizer = None
@@ -29,12 +29,12 @@ class BaseEncoder():
 
     def load_cache(self, task, location):
         cache_name = self.parse_model_name_to_cache_name(self.model_name, task, location)
-        onlyfiles = [f for f in listdir(self.PATH_CACHE) if isfile(join(self.PATH_CACHE, f))]
+        onlyfiles = [f for f in listdir(self.path_cache) if isfile(join(self.path_cache, f))]
 
         # ====== Look Up existing cache ====== #
         if cache_name in onlyfiles:
             print("cache Found {}".format(cache_name))
-            with open(join(self.PATH_CACHE, cache_name), 'rb') as f:
+            with open(join(self.path_cache, cache_name), 'rb') as f:
                 cache = pickle.load(f)
                 print("cache Loaded")
                 self.flag_cache_save = False
@@ -48,7 +48,7 @@ class BaseEncoder():
         if self.flag_cache_save:
             print("Start saving cache")
             cache_name = self.parse_model_name_to_cache_name(self.model_name, task, location)
-            with open(join(self.PATH_CACHE, cache_name), 'wb') as f:
+            with open(join(self.path_cache, cache_name), 'wb') as f:
                 pickle.dump(self.cache, f, pickle.HIGHEST_PROTOCOL)
             print("Saved cache {}".format(cache_name))
         else:

@@ -16,8 +16,8 @@ from .encoder import BaseEncoder
 
 class TransfoXLEncoder(BaseEncoder):
 
-    def __init__(self, model_name='transfo-xl-wt103', encode_capacity=3000, PATH_CACHE='./cache'):
-        super(TransfoXLEncoder, self).__init__(model_name, encode_capacity, PATH_CACHE)
+    def __init__(self, model_name='transfo-xl-wt103', encode_capacity=3000, path_cache='./cache'):
+        super(TransfoXLEncoder, self).__init__(model_name, encode_capacity, path_cache)
 
     def construct_encoder(self):
         model = TransfoXLModel.from_pretrained(self.model_name)
