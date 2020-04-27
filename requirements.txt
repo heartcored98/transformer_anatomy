@@ -4,4 +4,13 @@ tqdm
 seaborn
 torch #https://download.pytorch.org/whl/cu100/torch-1.4.0%2Bcu100-cp36-cp36m-linux_x86_64.whl
 transformers # Also need to install examples/requirements.txt
-apex # Look at installation instruction at https://github.com/NVIDIA/apex
+#apex # Look at installation instruction at https://github.com/NVIDIA/apex
+tensorboardX
+tensorboard
+scikit-learn
+seqeval
+psutil
+sacrebleu
+rouge-score
+tensorflow_datasets
+pytorch-lightning==0.7.3  # April 10, 2020 release
