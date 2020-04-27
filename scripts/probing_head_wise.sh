@@ -2,7 +2,7 @@
 
 
 export MODEL=electra-small-discriminator
-export TASK_NAME=1
+export TASK_NAME=9
 export DEVICE=$(( $TASK_NAME % 8))
 export BS=4000
 
