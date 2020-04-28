@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 
-export MODEL=electra-small-discriminator
-export TASK_NAME=9
-export DEVICE=$(( $TASK_NAME % 8))
-export BS=4000
+export MODEL=electra-large-discriminator
+export TASK_NAME=3
+export DEVICE=$(( $TASK_NAME % 8 -3 ))
+export BS=1500
 
 echo "Start Task:" $TASK_NAME / "at Device:" $DEVICE
 

@@ -40,8 +40,8 @@ if __name__ == '__main__':
     parser.add_argument("--model_name", type=str, default='electra-base-discriminator') #
 
     parser.add_argument("--task", type=int, default=0)
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 11])
-    parser.add_argument("--head", nargs='+', type=int, default=[0, 3]) #8, 15
+    parser.add_argument("--layer", nargs='+', type=int, default=[1])
+    parser.add_argument("--head", nargs='+', type=int, default=[15]) #8, 15
     parser.add_argument("--location", type=str, default='head') #8, 15
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)

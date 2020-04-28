@@ -16,7 +16,6 @@ from transformers import ElectraTokenizer, ElectraModel
 from transformer_anatomy.extractor import AutoExtractor, ElectraExtractor
 from .encoder import BaseEncoder
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 
 class ElectraEncoder(BaseEncoder):
