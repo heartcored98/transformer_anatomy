@@ -1,31 +1,25 @@
-
 import sys
-import torch
-import numpy as np
-import time
-import hashlib
-from os import listdir
-from os.path import isfile, join
-import pickle
-import argparse
-import json
-from tqdm import tqdm
 from copy import deepcopy
 import os
+import argparse
+import sklearn
 
 
-PATH_BERT = '../pytorch-pretrained-BERT'
-sys.path.insert(0, PATH_BERT)
+import torch
+import numpy as np
+from tqdm import tqdm
 
 
-PATH_SENTEVAL = './SentEval'
-PATH_TO_DATA = './SentEval/data'
-PATH_TO_CACHE = './cache/'
+PATH_SENTEVAL = '/home/jovyan/drmoacl/transformer_anatomy/SentEval'
+PATH_TO_DATA = '/home/jovyan/drmoacl/transformer_anatomy/SentEval/data'
+PATH_TO_CACHE = '/home/jovyan/drmoacl/transformer_anatomy/.cache'
+PATH_TO_RESULT = '/home/jovyan/drmoacl/transformer_anatomy/results/linear_head_wise_results'
 sys.path.insert(0, PATH_SENTEVAL)
+
 import senteval
 
-from encoder import BERTEncoder, GPTEncoder, GPT2Encoder, TransfoXLEncoder
-from encoder.downstream_single_head_exp import *
+from transformer_anatomy.encoder import BERTEncoder, GPTEncoder, GPT2Encoder, TransfoXLEncoder, ElectraEncoder
+from transformer_anatomy.downstream_single_head_exp import *
 
 
 
@@ -38,18 +32,18 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=1000)
     parser.add_argument("--kfold", type=int, default=5)
     parser.add_argument("--usepytorch", type=bool, default=True)
-    parser.add_argument("--task_path", type=str, default='./SentEval/data/')
-    parser.add_argument("--cache_path", type=str, default='./cache/')
-    parser.add_argument("--result_path", type=str, default='./ds_linear_head_wise_results/')
+    parser.add_argument("--task_path", type=str, default=PATH_TO_DATA)
+    parser.add_argument("--cache_path", type=str, default=PATH_TO_CACHE)
+    parser.add_argument("--result_path", type=str, default=PATH_TO_RESULT)
     parser.add_argument("--optim", type=str, default='rmsprop')
     parser.add_argument("--cbatch_size", type=int, default=256)
     parser.add_argument("--tenacity", type=int, default=3)
     parser.add_argument("--epoch_size", type=int, default=2)
-    parser.add_argument("--model_name", type=str, default='bert-base-uncased')  #bert-base-uncased
+    parser.add_argument("--model_name", type=str, default='electra-base-discriminator') #
 
     parser.add_argument("--task", type=int, default=17) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 1])
-    parser.add_argument("--head", nargs='+', type=int, default=[0, 1])
+    parser.add_argument("--layer", nargs='+', type=int, default=[0, 23])
+    parser.add_argument("--head", nargs='+', type=int, default=[0, 15]) #8, 15
     parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
@@ -85,6 +79,8 @@ if __name__ == '__main__':
         model = GPT2Encoder(encode_capacity=args.batch_size)
     elif args.model_name == 'transfo-xl-wt103':
         model = TransfoXLEncoder(encode_capacity=args.batch_size)
+    elif 'electra' in args.model_name:
+        model = ElectraEncoder(model_name=args.model_name, encode_capacity=args.batch_size, path_cache=args.cache_path)
     else:
         raise ValueError
 

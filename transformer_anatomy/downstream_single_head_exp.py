@@ -9,8 +9,6 @@ PATH_BERT = '../pytorch-pretrained-BERT'
 sys.path.insert(0, PATH_BERT)
 
 PATH_SENTEVAL = './SentEval'
-PATH_TO_DATA = './SentEval/data/'
-PATH_TO_CACHE = './cache/'
 sys.path.insert(0, PATH_SENTEVAL)
 import senteval
 
