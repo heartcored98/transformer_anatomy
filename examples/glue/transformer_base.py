@@ -5,6 +5,7 @@ import random
 
 import numpy as np
 import pytorch_lightning as pl
+from pytorch_lightning.logging.neptune import NeptuneLogger
 import torch
 
 from transformers import (
@@ -109,7 +110,7 @@ class BaseTransformer(pl.LightningModule):
 
     def train_dataloader(self):
         train_batch_size = self.hparams.train_batch_size
-        dataloader = self.load_dataset("train", train_batch_size)
+        dataloader = self.load_dataset("train", train_batch_size, n_worker=self.hparams.n_worker)
 
         t_total = (
             (len(dataloader.dataset) // (train_batch_size * max(1, self.hparams.n_gpu)))
@@ -123,10 +124,10 @@ class BaseTransformer(pl.LightningModule):
         return dataloader
 
     def val_dataloader(self):
-        return self.load_dataset("dev", self.hparams.eval_batch_size)
+        return self.load_dataset("dev", self.hparams.eval_batch_size, self.hparams.n_worker)
 
     def test_dataloader(self):
-        return self.load_dataset("test", self.hparams.eval_batch_size)
+        return self.load_dataset("test", self.hparams.eval_batch_size, self.hparams.n_worker)
 
     def _feature_file(self, mode):
         return os.path.join(
@@ -222,6 +223,7 @@ def add_generic_args(parser, root_dir):
         "See details at https://nvidia.github.io/apex/amp.html",
     )
 
+    parser.add_argument("--n_worker", type=int, default=1)
     parser.add_argument("--n_gpu", type=int, default=1)
     parser.add_argument("--n_tpu_cores", type=int, default=0)
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
@@ -272,7 +274,17 @@ def generic_train(model: BaseTransformer, args: argparse.Namespace):
     if args.n_gpu > 1:
         train_params["distributed_backend"] = "ddp"
 
-    trainer = pl.Trainer(**train_params)
+
+    neptune_logger = NeptuneLogger(
+        api_key=os.environ['NEPTUNE_API_TOKEN'],
+        project_name="kevinjo/acl2020",
+        experiment_name="default",  # Optional,
+        params=vars(args),  # Optional,
+        tags=args.tags  # Optional,
+    )
+    train_params.update({'logger': neptune_logger})
+
+    trainer = pl.Trainer(**train_params, )
 
     if args.do_train:
         trainer.fit(model)

@@ -15,3 +15,4 @@ glue_data
 # Ignore automatically generated experiments 
 runs
 lightning_logs
+checkpoint*

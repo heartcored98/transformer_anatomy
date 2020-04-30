@@ -70,7 +70,7 @@ class GLUETransformer(BaseTransformer):
                 logger.info("Saving features into cached file %s", cached_features_file)
                 torch.save(features, cached_features_file)
 
-    def load_dataset(self, mode, batch_size):
+    def load_dataset(self, mode, batch_size, n_worker=1):
         "Load datasets. Called after prepare data."
 
         # We test on dev set to compare to benchmarks without having to submit to GLUE server
@@ -91,6 +91,7 @@ class GLUETransformer(BaseTransformer):
             TensorDataset(all_input_ids, all_attention_mask, all_token_type_ids, all_labels),
             batch_size=batch_size,
             shuffle=True,
+            num_workers=n_worker
         )
 
     def validation_step(self, batch, batch_idx):
@@ -168,6 +169,11 @@ class GLUETransformer(BaseTransformer):
         parser.add_argument(
             "--overwrite_cache", action="store_true", help="Overwrite the cached training and evaluation sets"
         )
+
+        parser.add_argument(
+            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT']
+        )
+
 
         return parser
 
