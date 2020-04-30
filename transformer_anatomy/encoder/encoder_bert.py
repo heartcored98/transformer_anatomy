@@ -11,10 +11,10 @@ import torch
 
 PATH_BERT = '/home/jovyan/drmoacl/transformer_anatomy'
 sys.path.insert(0, PATH_BERT)
-from pytorch_pretrained_bert import BertTokenizer, BertModel
-from .encoder import BaseEncoder
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+from transformers import BertTokenizer, BertModel
+from transformer_anatomy.extractor import BertExtractor
+from .encoder import BaseEncoder
 
 
 class BERTEncoder(BaseEncoder):
@@ -23,12 +23,12 @@ class BERTEncoder(BaseEncoder):
         super(BERTEncoder, self).__init__(model_name, encode_capacity, path_cache)
 
     def construct_encoder(self):
-        model = BertModel.from_pretrained(self.model_name)
+        model = BertModel.from_pretrained(self.model_name, output_hidden_states=True, output_attentions=True)
+        model = BertExtractor(model, location=None, heads=None)
         model.cuda()
         model = torch.nn.DataParallel(model)
         model.eval()
 
-        temp = '/'.join(self.model_name.split('/')[:-1])
         print('tokenizer', self.model_name)
         tokenizer = BertTokenizer.from_pretrained(self.model_name, do_lower_case=True)
         print("Model and tokenzier are constructed!")
@@ -82,13 +82,13 @@ class BERTEncoder(BaseEncoder):
                 input_mask = torch.Tensor(input_mask).long().cuda()
 
                 # ====== Encode Tokens ====== #
-                encoded_layers, _, self_attention_layers = self.model(input_ids, input_type_ids, input_mask)
+                all_hidden_states, all_head_states = self.model(input_ids, input_type_ids, input_mask)
                 torch.cuda.synchronize()
 
                 if location == 'fc':
-                    output = np.array([layer[:, 0, :].detach().cpu().numpy() for layer in encoded_layers])
+                    output = np.array([layer[:, 0, :].detach().cpu().numpy() for layer in all_hidden_states])
                 elif location == 'head':
-                    output = np.array([layer[:, 0, :].detach().cpu().numpy() for layer in self_attention_layers])
+                    output = np.array([layer[:, 0, :].detach().cpu().numpy() for layer in all_head_states])
 
                 output = np.swapaxes(output, 0, 1)
                 list_output.append(output)

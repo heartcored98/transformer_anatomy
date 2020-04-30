@@ -13,9 +13,8 @@ PATH_BERT = '/home/jovyan/drmoacl/transformer_anatomy'
 sys.path.insert(0, PATH_BERT)
 
 from transformers import ElectraTokenizer, ElectraModel
-from transformer_anatomy.extractor import AutoExtractor, ElectraExtractor
+from transformer_anatomy.extractor import ElectraExtractor
 from .encoder import BaseEncoder
-
 
 
 class ElectraEncoder(BaseEncoder):
@@ -25,7 +24,7 @@ class ElectraEncoder(BaseEncoder):
 
     def construct_encoder(self):
         model = ElectraModel.from_pretrained('google/' + self.model_name, output_hidden_states=True, output_attentions=True)
-        model = ElectraExtractor.from_model(model)
+        model = ElectraExtractor(model, location=None, heads=None)
         model.cuda()
         model = torch.nn.DataParallel(model)
         model.eval()
@@ -83,7 +82,7 @@ class ElectraEncoder(BaseEncoder):
                 input_mask = torch.Tensor(input_mask).long().cuda()
 
                 # ====== Encode Tokens ====== #
-                last_hidden_state, all_hidden_states, all_attentions, all_head_states = self.model(input_ids, input_type_ids, input_mask)
+                all_hidden_states, all_head_states = self.model(input_ids, input_type_ids, input_mask)
                 torch.cuda.synchronize()
 
                 if location == 'fc':

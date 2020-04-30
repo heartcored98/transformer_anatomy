@@ -39,12 +39,12 @@ if __name__ == '__main__':
     parser.add_argument("--cbatch_size", type=int, default=256)
     parser.add_argument("--tenacity", type=int, default=3)
     parser.add_argument("--epoch_size", type=int, default=2)
-    parser.add_argument("--model_name", type=str, default='bert-base-uncased') #
+    parser.add_argument("--model_name", type=str) #
 
     parser.add_argument("--task", type=int, default=17) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 23])
-    parser.add_argument("--head", nargs='+', type=int, default=[-1]) #8, 15
-    parser.add_argument("--location", type=str, default='fc')
+    parser.add_argument("--layer", nargs='+', type=int, default=[0, 11])
+    parser.add_argument("--head", nargs='+', type=int, default=[0, 11]) #8, 15
+    parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
     parser.add_argument("--nhid", type=int, default=0)

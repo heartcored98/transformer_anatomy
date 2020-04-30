@@ -64,7 +64,7 @@ class BaseTransformer(pl.LightningModule):
             self.hparams.model_name_or_path,
             from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
             config=self.config,
-            cache_dir=cache_dir,
+            cache_dir=cache_dir
         )
 
     def is_logger(self):

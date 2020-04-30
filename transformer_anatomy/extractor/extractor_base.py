@@ -1,8 +1,11 @@
 
 class BaseExtractor():
 
-    def __init__(self, model):
-        self.model = model
+    def __init__(self, model, location, heads):
+        self.is_output_hidden_states(model)
+        self.model = self.override_forward(model)
+        self.location = location
+        self.heads = heads
 
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
@@ -22,8 +25,11 @@ class BaseExtractor():
     def get_heads(self):
         return self.heads
 
-    @classmethod
-    def is_output_hidden_states(cls, model):
+    def is_output_hidden_states(self, model):
         if model.config.output_hidden_states:
             return
         raise ValueError("model should be created with 'output_hidden_states' option as 'True'. ")
+        
+        if model.config.output_attentions:
+            return
+        raise ValueError("model should be created with 'output_attentions' option as 'True'. ")
