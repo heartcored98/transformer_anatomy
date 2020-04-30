@@ -42,8 +42,8 @@ if __name__ == '__main__':
     parser.add_argument("--model_name", type=str, default='electra-base-discriminator') #
 
     parser.add_argument("--task", type=int, default=17) # MRPC->17 / STS-B -> 21 / SST-2 -> 14
-    parser.add_argument("--layer", nargs='+', type=int, default=[0, 23])
-    parser.add_argument("--head", nargs='+', type=int, default=[0, 15]) #8, 15
+    parser.add_argument("--layer", nargs='+', type=int, default=[0])
+    parser.add_argument("--head", nargs='+', type=int, default=[0]) #8, 15
     parser.add_argument("--location", type=str, default='head')
     parser.add_argument("--head_size", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0)
@@ -71,14 +71,14 @@ if __name__ == '__main__':
 
     cnt = 0
     args.task = tasks[args.task]
-    if 'bert-base-uncased' in args.model_name or 'bert-large-uncased' in args.model_name:
-        model = BERTEncoder(model_name=args.model_name, encode_capacity=args.batch_size)
+    if args.model_name in ['bert-base-uncased', 'bert-large-uncased'] :
+        model = BERTEncoder(model_name=args.model_name, encode_capacity=args.batch_size, path_cache=args.cache_path)
     elif args.model_name == 'openai-gpt':
-        model = GPTEncoder(encode_capacity=args.batch_size)
+        model = GPTEncoder(encode_capacity=args.batch_size, path_cache=args.cache_path)
     elif args.model_name == 'gpt2':
-        model = GPT2Encoder(encode_capacity=args.batch_size)
+        model = GPT2Encoder(encode_capacity=args.batch_size, path_cache=args.cache_path)
     elif args.model_name == 'transfo-xl-wt103':
-        model = TransfoXLEncoder(encode_capacity=args.batch_size)
+        model = TransfoXLEncoder(encode_capacity=args.batch_size, path_cache=args.cache_path)
     elif 'electra' in args.model_name:
         model = ElectraEncoder(model_name=args.model_name, encode_capacity=args.batch_size, path_cache=args.cache_path)
     else:

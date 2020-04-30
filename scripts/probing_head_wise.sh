@@ -8,7 +8,7 @@ export BS=1500
 
 echo "Start Task:" $TASK_NAME / "at Device:" $DEVICE
 
-/opt/conda/envs/env_bert/bin/python ../head_wise_linear_senteval.py \
+/opt/conda/envs/env_bert/bin/python ../probing_head_wise_linear_senteval.py \
 --task $TASK_NAME \
 --model_name $MODEL \
 --batch_size $BS \
