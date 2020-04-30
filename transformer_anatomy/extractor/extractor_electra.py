@@ -11,7 +11,7 @@ class ElectraExtractor(BaseExtractor):
 
     def __call__(self, *args, **kwargs):
         last_hidden_state, all_hidden_states, all_attentions, all_head_states = self.model(*args, **kwargs)
-        return all_hidden_states, all_head_states
+        return self.extract_embedding(all_hidden_states, all_head_states)
 
     def override_forward(self, model):
         model.encoder.forward = types.MethodType(bert_encoder_forward, model.encoder)
