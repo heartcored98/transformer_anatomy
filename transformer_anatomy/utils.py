@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 
-def get_results(dir_path, model_name=None, part=None):
+def get_results(dir_path, model_name=None, part=None, task=None):
     if part and not part in ['head', 'layer']:
         raise ValueError(f"part={part} should be 'head' or 'layer'.")
 
@@ -18,15 +18,19 @@ def get_results(dir_path, model_name=None, part=None):
             for key, result in results.items():
                 list_result.append(result)
                 
-    df = pd.DataFrame(list_result)[['acc', 'head', 'layer', 'task', 'model_name', 'location', 'devacc']]
+    df = pd.DataFrame(list_result)[['acc', 'head', 'layer', 'task', 'model_name', 'location', 'devacc', 'devpearson']] 
 
-    # Filter out results
+    # Filter by model name
     if model_name:
         df = df.loc[df['model_name'] == model_name]
+    # Filter by pooling location
     if part == 'head':
         df = df.loc[df['head'] >= 0]
     elif part == 'layer':
         df = df.loc[df['head'] == -1]
+    # Filter by task name
+    if task:
+        df = df.loc[df['task'] == task]
 
     for column in columns:
         try:
@@ -35,3 +39,14 @@ def get_results(dir_path, model_name=None, part=None):
             pass
 
     return df
+
+
+def find_top_n_layer(model_name, task, dir_path, n_layer=1):
+    df = get_results(dir_path=dir_path, task=task, model_name=model_name, part='layer')
+    if task in ['STSBenchmark', 'SICKRelatedness']:
+        df = df.sort_values(by='devpearson', ascending=False)
+    else:
+        df = df.sort_values(by='devacc', ascending=False)
+
+    top_n_layers = df['layer'][:n_layer].values
+    return top_n_layers
