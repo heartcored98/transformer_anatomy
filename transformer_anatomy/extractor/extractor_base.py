@@ -78,7 +78,7 @@ class BaseExtractor(nn.Module):
             raise NotImplementedError("Currently, only single layer supported")
 
     def extract_embedding(self, all_hidden_states, all_head_states):
-        if self.location == 'layer':
+        if self.location == 'last' or self.location == 'best':
             return self.get_multi_layer_embedding(all_hidden_states)
         elif self.location == 'head':
             return self.get_multi_head_embedding(all_head_states)

@@ -35,7 +35,7 @@ class Classifier(nn.Module):
 
         self.config = config
 
-        if location == 'layer':
+        if location == 'last' or location == 'best':
             self.pooled_output_size = len(pooling_position) * self.config.hidden_size
         elif location == 'head':
             self.pooled_output_size = len(pooling_position) * int(self.config.hidden_size/self.config.num_attention_heads)
