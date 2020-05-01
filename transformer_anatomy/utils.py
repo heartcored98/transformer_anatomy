@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 
-def get_results(dir_path, model_name=None, part=None, task=None):
+def get_results(dir_path, model_name=None, part=None, task=None, metrics=['devacc']):
     if part and not part in ['head', 'layer']:
         raise ValueError(f"part={part} should be 'head' or 'layer'.")
 
@@ -18,7 +18,7 @@ def get_results(dir_path, model_name=None, part=None, task=None):
             for key, result in results.items():
                 list_result.append(result)
                 
-    df = pd.DataFrame(list_result)[['acc', 'head', 'layer', 'task', 'model_name', 'location', 'devacc', 'devpearson']] 
+    df = pd.DataFrame(list_result)[['acc', 'head', 'layer', 'task', 'model_name', 'location'] + metrics] 
 
     # Filter by model name
     if model_name:
