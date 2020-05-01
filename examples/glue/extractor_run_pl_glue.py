@@ -94,7 +94,7 @@ class ExtractedGLUETransformer(BaseTransformer):
     def forward(self, **inputs):
         labels = inputs.pop('labels')
         pooled_output = self.model(**inputs)
-        print('line96', pooled_output.shape)
+        #print('line96', pooled_output.shape)
         outputs = self.classifier(pooled_output, labels=labels, **inputs)
         return outputs
 
@@ -260,7 +260,7 @@ class ExtractedGLUETransformer(BaseTransformer):
         )
 
         parser.add_argument(
-            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT', 'layer']
+            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT', 'best-layer']
         )
 
 
