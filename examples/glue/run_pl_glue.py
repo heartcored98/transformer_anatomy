@@ -3,6 +3,8 @@ import glob
 import logging
 import os
 import time
+import sys; sys.path.insert(0, '../../')
+
 
 import sklearn.metrics
 import numpy as np
@@ -98,7 +100,7 @@ class GLUETransformer(BaseTransformer):
         inputs = {"input_ids": batch[0], "attention_mask": batch[1], "labels": batch[3]}
 
         if self.config.model_type != "distilbert":
-            inputs["token_type_ids"] = batch[2] if self.config.model_type in ["bert", "xlnet", "albert"] else None
+            inputs["token_type_ids"] = batch[2] if self.config.model_type in ["bert", "xlnet", "albert", "electra"] else None
 
         outputs = self(**inputs)
         tmp_eval_loss, logits = outputs[:2]
@@ -171,7 +173,7 @@ class GLUETransformer(BaseTransformer):
         )
 
         parser.add_argument(
-            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT']
+            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT', 'last-layer']
         )
 
 

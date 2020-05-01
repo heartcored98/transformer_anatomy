@@ -3,9 +3,7 @@ import glob
 import logging
 import os
 import time
-import sys
-
-sys.path.insert(0, '../../')
+import sys; sys.path.insert(0, '../../')
 
 
 import sklearn.metrics
