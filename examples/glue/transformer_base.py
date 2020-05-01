@@ -60,11 +60,15 @@ class BaseTransformer(pl.LightningModule):
             self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
             cache_dir=cache_dir,
         )
+
+        self.config.output_hidden_states = True
+        self.config.output_attentions = True
+
         self.model = MODEL_MODES[mode].from_pretrained(
             self.hparams.model_name_or_path,
             from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
             config=self.config,
-            cache_dir=cache_dir
+            cache_dir=cache_dir,
         )
 
     def is_logger(self):

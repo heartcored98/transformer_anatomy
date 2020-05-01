@@ -3,7 +3,7 @@ sys.path.insert(0, '../')
 
 import torch
 import transformer_anatomy
-from transformers import ElectraModel, ElectraTokenizer, BertModel, BertTokenizer 
+from transformers import ElectraModel, ElectraTokenizer, BertModel, BertTokenizer, AutoConfig, AutoModel 
 from transformer_anatomy.extractor import AutoExtractor, ElectraExtractor
 
 
@@ -11,14 +11,18 @@ from transformer_anatomy.extractor import AutoExtractor, ElectraExtractor
 if __name__ == '__main__':
 
     model_name = 'google/electra-small-discriminator'
-    print(f"==== Testing model={model_name} ====")
 
+    print("==== Testing AutoConfig")
+    config = AutoConfig.from_pretrained(model_name)
+
+    print(f"==== Testing model={model_name} ====")
     model = ElectraModel.from_pretrained(model_name, output_hidden_states=True, output_attentions=True)
     tokenizer = ElectraTokenizer.from_pretrained(model_name)
     model = AutoExtractor.from_model(model)
     print(type(model))
 
-    # assert model==ElectraExtractor
+
+    print(f"==== Without Any Pooling ====")
     input_ids = torch.tensor([tokenizer.encode("Let's see all hidden-states and attentions on this text")])
     all_hidden_states, all_head_states = model(input_ids)
     assert len(all_hidden_states) == 13, "number of layer does not match"
@@ -33,17 +37,20 @@ if __name__ == '__main__':
     layer_embedding = model(input_ids)
     print(layer_embedding.shape)
 
+
     print(f"==== Pooling from Single Head ====")
     model.set_location('head')
     model.set_pooling_position([(3, 2)])
     head_embedding = model(input_ids)
     print(head_embedding.shape)
 
+
     print(f"==== Pooling from Multi Head ====")
     model.set_location('head')
     model.set_pooling_position([(3, 2), (4,2), (11,2)])
     multi_head_embedding = model(input_ids)
     print(multi_head_embedding.shape)
+
 
     model_name = 'bert-base-uncased'
     print(f"==== Testing model={model_name} ====")

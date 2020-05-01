@@ -3,11 +3,18 @@ import glob
 import logging
 import os
 import time
+import sys
+
+sys.path.insert(0, '../../')
+
 
 import sklearn.metrics
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+from torch import nn
+from torch.nn import CrossEntropyLoss, MSELoss
+
 
 from transformer_base import BaseTransformer, add_generic_args, generic_train
 from transformers import glue_compute_metrics as compute_metrics
@@ -16,8 +23,55 @@ from transformers import glue_output_modes
 from transformers import glue_processors as processors
 from transformers import glue_tasks_num_labels
 from transformer_anatomy.extractor import AutoExtractor
+from transformer_anatomy.utils import find_top_n_layer
+# from transformer_anatomy.tasks import dict_task_mapper
 
 logger = logging.getLogger(__name__)
+dict_task_mapper = {'sst-2':'SST2', 'sts-b':'STSBenchmark', 'mrpc':'MRPC'}
+
+class Classifier(nn.Module):
+
+    def __init__(self, encoder):
+        super(Classifier, self).__init__()
+
+        self.config = encoder.model.config
+
+        if encoder.location == 'layer':
+            self.pooled_output_size = len(encoder.pooling_position) * self.config.hidden_size
+        elif encoder.location == 'head':
+            self.pooled_output_size = len(encoder.pooling_position) * int(self.config.hidden_size/self.config.num_attention_heads)
+        
+        self.dense = nn.Linear(self.pooled_output_size, self.pooled_output_size)
+        self.activation = nn.Tanh()
+        self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
+        self.fc = nn.Linear(self.pooled_output_size, self.config.num_labels)
+
+    def forward(
+        self,
+        pooled_output,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        head_mask=None,
+        inputs_embeds=None,
+        labels=None,
+    ):
+        pooled_output = self.activation(self.dense(pooled_output))
+        pooled_output = self.dropout(pooled_output)
+        logits = self.fc(pooled_output)
+
+        if labels is not None:
+            if self.config.num_labels == 1:
+                #  We are doing regression
+                loss_fct = MSELoss()
+                loss = loss_fct(logits.view(-1), labels.view(-1))
+            else:
+                loss_fct = CrossEntropyLoss()
+                loss = loss_fct(logits.view(-1, self.config.num_labels), labels.view(-1))
+            outputs = (loss, logits)
+
+        return outputs  # (loss), logits, (hidden_states), (attentions)
 
 
 class ExtractedGLUETransformer(BaseTransformer):
@@ -28,20 +82,27 @@ class ExtractedGLUETransformer(BaseTransformer):
         hparams.glue_output_mode = glue_output_modes[hparams.task]
         num_labels = glue_tasks_num_labels[hparams.task]
 
+        # Create initial model
         super().__init__(hparams, num_labels, self.mode)
-        self.model.output_hidden_states = True
-        self.model.output_attentions = True
-        self.model = AutoExtractor.from_model(self.model)
 
+        if hparams.location is None:
+            raise ValueError("location should be determined between 'head' and 'layer'. ")
+        print(type(self.model))
+        self.model = AutoExtractor.from_model(self.model, location=hparams.location, pooling_position=hparams.pooling_position)
+        self.classifier = Classifier(self.model) 
 
     def forward(self, **inputs):
-        return self.model(**inputs)
+        labels = inputs.pop('labels')
+        pooled_output = self.model(**inputs)
+        print('line96', pooled_output.shape)
+        outputs = self.classifier(pooled_output, labels=labels, **inputs)
+        return outputs
 
     def training_step(self, batch, batch_idx):
         inputs = {"input_ids": batch[0], "attention_mask": batch[1], "labels": batch[3]}
 
         if self.config.model_type != "distilbert":
-            inputs["token_type_ids"] = batch[2] if self.config.model_type in ["bert", "xlnet", "albert"] else None
+            inputs["token_type_ids"] = batch[2] if self.config.model_type in ["bert", "xlnet", "albert", "electra"] else None
 
         outputs = self(**inputs)
         loss = outputs[0]
@@ -171,11 +232,35 @@ class ExtractedGLUETransformer(BaseTransformer):
         )
 
         parser.add_argument(
+            "--evaluation_dir",
+            default=None,
+            type=str,
+            required=True,
+            help="The evaluation result data dir. Should contain head-wise or layer-wise evaluation results",
+        )
+
+        parser.add_argument(
+            "--num_pooling",
+            default=None,
+            type=int,
+            required=True,
+            help="Number of pooled head or layer",
+        )
+
+        parser.add_argument(
+            "--location",
+            default=None,
+            type=str,
+            required=True,
+            help="pooling output from 'head' or 'layer'",
+        )
+
+        parser.add_argument(
             "--overwrite_cache", action="store_true", help="Overwrite the cached training and evaluation sets"
         )
 
         parser.add_argument(
-            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT']
+            "--tags", nargs='+', type=str, help="experiment tags for neptune.ai", default=['FT', 'layer']
         )
 
 
@@ -192,6 +277,23 @@ if __name__ == "__main__":
     if args.output_dir is None:
         args.output_dir = os.path.join("./results", f"{args.task}_{time.strftime('%Y%m%d_%H%M%S')}",)
         os.makedirs(args.output_dir)
+
+    # Look-up evaluation results. 
+    model_name = args.model_name_or_path
+    model_name = model_name.split('/')[-1] if 'electra' in model_name else model_name
+    if args.location == 'layer':
+        args.pooling_position = find_top_n_layer(
+            model_name=model_name,
+            task=dict_task_mapper[args.task],
+            dir_path=args.evaluation_dir,
+            n_layer=args.num_pooling
+        )
+        print("================")
+        print(args.pooling_position)
+    elif args.location == 'head':
+        pass
+    else:
+        raise ValueError("location should be 'layer' or 'head'. ")
 
     model = ExtractedGLUETransformer(args)
     trainer = generic_train(model, args)

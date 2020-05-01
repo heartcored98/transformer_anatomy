@@ -1,9 +1,12 @@
 
 import torch
+from torch import nn
 
-class BaseExtractor():
+class BaseExtractor(nn.Module):
 
     def __init__(self, model, location, pooling_position):
+        super(BaseExtractor, self).__init__()
+
         self.is_output_hidden_states(model)
         self.model = self.override_forward(model)
         self.location = location

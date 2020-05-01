@@ -11,4 +11,6 @@ dict_task = {0:'Length',  1:'WordContent', 2:'Depth', 3:'TopConstituents', 4:'Bi
              10: 'CR', 11: 'MR', 12:'MPQA', 13:'SUBJ', 14:'SST2',
              15:'SST5', 16:'TREC', 17:'MRPC', 18:'SNLI', 19:'SICKEntailment',
              20:'SICKRelatedness', 21:'STSBenchmark', 22:'ImageCaptionRetrieval', 23:'STS12', 24:'STS13',
-             25:'STS14', 26:'STS15', 27:'STS16'}
+             25: 'STS14', 26: 'STS15', 27: 'STS16'}
+             
+
