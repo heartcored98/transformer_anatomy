@@ -13,6 +13,8 @@ export SEED=0
 export CUDA_VISIBLE_DEVICES=$(( $SEED % 4 ))
 export BERT_MODEL=bert-large-uncased #google/electra-base-discriminator
 export N_GPU=1
+export LOCATION=last
+export NUM_POOLING=1
 
 export TASK=mrpc #'cola': 2, 'mnli': 3, 'mrpc': 2, 'sst-2': 2, 'sts-b': 1, 'qqp': 2, 'qnli': 2, 'rte': 2, 'wnli': 2
 export DATA_DIR=../../data/glue_data/MRPC #/glue_data/MRPC/
@@ -22,7 +24,7 @@ export EXP_NAME=best_layer_snapshot
 
 export MAX_LENGTH=128
 export LEARNING_RATE=2e-5
-export BATCH_SIZE=16
+export BATCH_SIZE=32
 export NUM_EPOCHS=3
 export OUTPUT_DIR_NAME=${BERT_MODEL}-${TASK}-${SEED}
 export OUTPUT_DIR=${PWD}/${EXP_NAME}/${OUTPUT_DIR_NAME}
@@ -46,8 +48,8 @@ python extractor_run_pl_glue.py --data_dir $DATA_DIR \
 --do_predict \
 --n_gpu $N_GPU \
 --n_worker 4 \
---num_pooling 1 \
---location layer
+--num_pooling $NUM_POOLING \
+--location $LOCATION
 
 
 ###################################################################################################################
@@ -84,8 +86,8 @@ python extractor_run_pl_glue.py --data_dir $DATA_DIR \
 --do_predict \
 --n_gpu $N_GPU \
 --n_worker 4 \
---num_pooling 1 \
---location layer
+--num_pooling $NUM_POOLING \
+--location $LOCATION
 
 
 
@@ -123,5 +125,5 @@ python extractor_run_pl_glue.py --data_dir $DATA_DIR \
 --do_predict \
 --n_gpu $N_GPU \
 --n_worker 4 \
---num_pooling 1 \
---location layer
+--num_pooling $NUM_POOLING \
+--location $LOCATION

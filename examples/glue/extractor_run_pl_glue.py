@@ -280,15 +280,16 @@ if __name__ == "__main__":
     # Look-up evaluation results. 
     model_name = args.model_name_or_path
     model_name = model_name.split('/')[-1] if 'electra' in model_name else model_name
-    if args.location == 'layer':
+    if args.location == 'best':
         args.pooling_position = find_top_n_layer(
             model_name=model_name,
             task=dict_task_mapper[args.task],
             dir_path=args.evaluation_dir,
             n_layer=args.num_pooling
         )
-        print("================")
         print(args.pooling_position)
+    elif args.location == 'last':
+        args.pooling_position = [-1]
     elif args.location == 'head':
         pass
     else:
