@@ -9,16 +9,16 @@
 source ~/.bashrc
 conda activate env_bert
 
-export SEED=3
+export SEED=4
 export CUDA_VISIBLE_DEVICES=$(( $SEED % 4 ))
 
-export TASK=sst-2 #'cola': 2, 'mnli': 3, 'mrpc': 2, 'sst-2': 2, 'sts-b': 1, 'qqp': 2, 'qnli': 2, 'rte': 2, 'wnli': 2
-export DATA_DIR=../../data/glue_data/SST-2 #/glue_data/MRPC/
+export TASK=sts-b #'cola': 2, 'mnli': 3, 'mrpc': 2, 'sst-2': 2, 'sts-b': 1, 'qqp': 2, 'qnli': 2, 'rte': 2, 'wnli': 2
+export DATA_DIR=../../data/glue_data/STS-B #/glue_data/MRPC/
 export EXP_NAME=last_layer_snapshot
 
 export MAX_LENGTH=128
 export LEARNING_RATE=2e-5
-export BERT_MODEL=googlebert-base-uncased
+export BERT_MODEL=bert-base-uncased
 export BATCH_SIZE=32
 export NUM_EPOCHS=3
 export OUTPUT_DIR_NAME=${BERT_MODEL}-${TASK}-${SEED}

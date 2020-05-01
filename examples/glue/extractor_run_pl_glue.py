@@ -24,22 +24,23 @@ from transformers import glue_processors as processors
 from transformers import glue_tasks_num_labels
 from transformer_anatomy.extractor import AutoExtractor
 from transformer_anatomy.utils import find_top_n_layer
-# from transformer_anatomy.tasks import dict_task_mapper
+
+
 
 logger = logging.getLogger(__name__)
 dict_task_mapper = {'sst-2':'SST2', 'sts-b':'STSBenchmark', 'mrpc':'MRPC'}
 
 class Classifier(nn.Module):
 
-    def __init__(self, encoder):
+    def __init__(self, config, location, pooling_position):
         super(Classifier, self).__init__()
 
-        self.config = encoder.model.config
+        self.config = config
 
-        if encoder.location == 'layer':
-            self.pooled_output_size = len(encoder.pooling_position) * self.config.hidden_size
-        elif encoder.location == 'head':
-            self.pooled_output_size = len(encoder.pooling_position) * int(self.config.hidden_size/self.config.num_attention_heads)
+        if location == 'layer':
+            self.pooled_output_size = len(pooling_position) * self.config.hidden_size
+        elif location == 'head':
+            self.pooled_output_size = len(pooling_position) * int(self.config.hidden_size/self.config.num_attention_heads)
         
         self.dense = nn.Linear(self.pooled_output_size, self.pooled_output_size)
         self.activation = nn.Tanh()
@@ -81,15 +82,15 @@ class ExtractedGLUETransformer(BaseTransformer):
     def __init__(self, hparams):
         hparams.glue_output_mode = glue_output_modes[hparams.task]
         num_labels = glue_tasks_num_labels[hparams.task]
+        self.hparams = hparams
+        if self.hparams.location is None:
+            raise ValueError("location should be determined between 'head' and 'layer'. ")
 
         # Create initial model
         super().__init__(hparams, num_labels, self.mode)
 
-        if hparams.location is None:
-            raise ValueError("location should be determined between 'head' and 'layer'. ")
-        print(type(self.model))
-        self.model = AutoExtractor.from_model(self.model, location=hparams.location, pooling_position=hparams.pooling_position)
-        self.classifier = Classifier(self.model) 
+        self.classifier = Classifier(self.model.config, hparams.location, hparams.pooling_position) 
+        self.model = AutoExtractor.from_model(self.model, location=self.hparams.location, pooling_position=self.hparams.pooling_position).cuda()
 
     def forward(self, **inputs):
         labels = inputs.pop('labels')

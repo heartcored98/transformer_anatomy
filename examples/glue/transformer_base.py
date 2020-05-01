@@ -276,7 +276,7 @@ def generic_train(model: BaseTransformer, args: argparse.Namespace):
         train_params["gpus"] = 0
 
     if args.n_gpu > 1:
-        train_params["distributed_backend"] = "ddp"
+        train_params["distributed_backend"] = "dp"
 
 
     neptune_logger = NeptuneLogger(
