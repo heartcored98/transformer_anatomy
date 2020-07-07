@@ -80,8 +80,8 @@ These implementations is largely based on the following implementations.
 [X] Clean up directory structure  
 [X] Recover layer-wise, head-wise | probing-task, downstream-task 
 [X] Recover fine-tuning and solve dependency with legacy code  
+[X] Add experiments result access class   
 [ ] Update embedding caching algorithm -> pickle to parquet  
 [ ] Run multiple trial based on ray (sharing cache object)
 [ ] Refactoring Anatomy Wrapper class  
-[X] Add experiments result access class   
 [ ] Semantic / Syntactic Visualization  
