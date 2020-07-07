@@ -1,4 +1,4 @@
-## Transformer Anatomy: Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020 Accepted)  
+## Transformer Anatomy: Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020)  
 
 ### Toolkit for finding and analyzing important attention heads in transformer-based models  
 
