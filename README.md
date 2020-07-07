@@ -1,14 +1,15 @@
-## Transformer Anatomy: Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020)  
+## [Transformer Anatomy]: Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020)  
 
-### Toolkit for finding and analyzing important attention heads in transformer-based models  
+Official Pytorch implementation of **Transformer Anatomy** | [Paper](https://www.aclweb.org/anthology/2020.acl-main.311/)  
 
-Majority of researchers would agree that the BERT and other transformer models outperform previous models (LSTM, ELMo, etc..). However, most of us still does not understand well about how the transformers digest given input text internally. Therefore, this repository is a toolkit includes
+Jae-young Jo<sup>1,2</sup>, Sung-hyon Myaeng<sup>1</sup>  
 
-- Evaluate pre-trained(or just trained) transformer model with given downstream task in order to find out **superior attention heads** or encoder-layers including intuitive visualization within heatmap plot. 
+<sup>1</sup> <sub>KAIST</sub>  
+<sup>2</sup> <sub>Dingbro, Inc</sub>  
 
-- Construct **better sentence representation** without giving a change to pre-trained transformer by concatenating the output vectors from the superior attention heads.  
 
-# 
+Sentence encoders based on the transformer architecture have shown promising results on various natural language tasks. The main impetus lies in the pre-trained neural language models that capture long-range dependencies among words, owing to multi-head attention that is unique in the architecture. However, little is known for how linguistic properties are processed, represented, and utilized for downstream tasks among hundreds of attention heads inside the pre-trained transformer-based model. For the initial goal of examining the roles of attention heads in handling a set of linguistic features, we conducted a set of experiments with ten probing tasks and three downstream tasks on four pre-trained transformer families (GPT, GPT2, BERT, and ELECTRA). Meaningful insights are shown through the lens of heat map visualization and utilized to propose a relatively simple sentence representation method that takes advantage of most influential attention heads, resulting in additional performance improvements on the downstream tasks.
+
 
 ### DEMO #1 - Inspecting Internal Linguistic Information Handling Inside Transformers  
 
