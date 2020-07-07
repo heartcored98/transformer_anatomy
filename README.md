@@ -49,6 +49,23 @@ We can observe following internal tendency of **BERT BASE** along various downst
 
 Futhermore, we show how the downstream performance could be increased by just pulling internal outperforming hidden representation and using it as sentence representation. 
 
+## How to cite  
+```
+@inproceedings{jo-myaeng-2020-roles,
+    title = "Roles and Utilization of Attention Heads in Transformer-based Neural Language Models",
+    author = "Jo, Jae-young  and
+      Myaeng, Sung-Hyon",
+    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2020.acl-main.311",
+    pages = "3404--3417",
+    abstract = "Sentence encoders based on the transformer architecture have shown promising results on various natural language tasks. The main impetus lies in the pre-trained neural language models that capture long-range dependencies among words, owing to multi-head attention that is unique in the architecture. However, little is known for how linguistic properties are processed, represented, and utilized for downstream tasks among hundreds of attention heads inside the pre-trained transformer-based model. For the initial goal of examining the roles of attention heads in handling a set of linguistic features, we conducted a set of experiments with ten probing tasks and three downstream tasks on four pre-trained transformer families (GPT, GPT2, BERT, and ELECTRA). Meaningful insights are shown through the lens of heat map visualization and utilized to propose a relatively simple sentence representation method that takes advantage of most influential attention heads, resulting in additional performance improvements on the downstream tasks.",
+}
+```
+
 ## Reference  
 These implementations is largely based on the following implementations. 
 - [huggingface's pytorch-pretrained-BERT](https://github.com/huggingface/pytorch-pretrained-BERT)  
