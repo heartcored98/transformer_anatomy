@@ -1,4 +1,4 @@
-## [Transformer Anatomy]: Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020)  
+## [Transformer Anatomy] Roles and Utilization of Attention Heads in Transformer-based Neural Language Models (ACL 2020)  
 
 Official Pytorch implementation of **Transformer Anatomy** | [Paper](https://www.aclweb.org/anthology/2020.acl-main.311/)  
 
